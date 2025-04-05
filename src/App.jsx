@@ -1,35 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import Navbar from './components/Navbar';
+import BookList from './components/BookList';
+import BookDetail from './components/BookDetail';
+import useBookSearch from './hooks/useBookSearch';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [searchPerformed, setSearchPerformed] = useState(false);
+  const { 
+    books, 
+    selectedBook, 
+    loading, 
+    error, 
+    searchBooks, 
+    getBookDetails, 
+    setSelectedBook 
+  } = useBookSearch();
+
+  const handleSearch = (query, searchBy) => {
+    searchBooks(query, searchBy);
+    setSearchPerformed(true);
+  };
+
+  const handleSelectBook = (bookKey) => {
+    getBookDetails(bookKey);
+  };
+
+  const handleCloseDetail = () => {
+    setSelectedBook(null);
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="min-h-screen bg-gray-100">
+      <Navbar onSearch={handleSearch} />
+      
+      <main className="container mx-auto px-4 py-8">
+        {searchPerformed && !loading && books.length === 0 && !error ? (
+          <div className="text-center p-8 mb-8 bg-yellow-50 rounded-lg">
+            <h2 className="text-xl font-semibold text-yellow-800 mb-2">No Books Found</h2>
+            <p className="text-yellow-700">
+              We couldn't find any books matching your search. Please try different keywords.
+            </p>
+          </div>
+        ) : null}
+        
+        <BookList 
+          books={books} 
+          loading={loading && !selectedBook} 
+          error={error}
+          onSelectBook={handleSelectBook}
+        />
+        
+        {selectedBook && (
+          <BookDetail 
+            book={selectedBook}
+            loading={loading && selectedBook}
+            error={error}
+            onClose={handleCloseDetail}
+          />
+        )}
+      </main>
+      
+      <footer className="bg-blue-600 text-white text-center py-4 mt-8">
+        <p>© {new Date().getFullYear()} Book Library | Powered by Open Library API</p>
+      </footer>
+    </div>
+  );
 }
 
-export default App
+export default App;
