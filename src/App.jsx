@@ -30,10 +30,10 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gray-100">
       <Navbar onSearch={handleSearch} />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-grow container mx-auto px-4 py-8">
         {searchPerformed && !loading && books.length === 0 && !error ? (
           <div className="text-center p-8 mb-8 bg-yellow-50 rounded-lg">
             <h2 className="text-xl font-semibold text-yellow-800 mb-2">No Books Found</h2>
